@@ -29,7 +29,7 @@ function ringDoor(familyID) {
 }
 
 function sendMessageRequest(telegramUserID, message) {
-  message = req.body.message && req.body.message.length > 0 ? "\n\n*MESSAGGIO*\n" + req.body.message : "";
+  message = message && message.length > 0 ? "\n\n*MESSAGGIO*\n" + message : "";
 
   bot.sendMessage(telegramUserID, `🔔 C'è qualcuno alla porta! 🔔${message}`, {
     parse_mode: "Markdown",
@@ -61,8 +61,6 @@ app.post("/api/ring/family/:familyID", (req, res) => {
         error: error.message
       });
     }
-
-    message = req.body.message && req.body.message.length > 0 ? "\n\n*MESSAGGIO*\n" + req.body.message : "";
 
     if (results.length > 0) {
       for (i in results) {
