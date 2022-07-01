@@ -95,7 +95,7 @@ bot.on('callback_query', function onCallbackQuery(q) {
     axios
       .get(config.server.nodeOpenDoor)
       .then(function () {
-        bot.editMessageReplyMarkup(null);
+        bot.editMessageReplyMarkup({'inline_keyboard': [[]]});
         bot.sendMessage(q.message.chat.id, "✅ Porta aperta");
       })
       .catch(error => {
