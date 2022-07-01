@@ -1,6 +1,6 @@
 const config = require('../config');
 const axios = require('axios');
-const { createDBConnection } = require('./database')
+const { createDBConnection, addLog } = require('./database')
 
 const TelegramBot = require('node-telegram-bot-api');
 
@@ -15,6 +15,8 @@ function setMessage(message, userID, chatID) {
                         set Families.Message = ?
                         where FamilyComponents.TelegramUser = ?`, [message, userID], (error, results, _) => {
     dbConnection.end();
+
+    addLog(`[${userID}] Nuovo avviso: ${message}`);
 
     if (error) {
       bot.sendMessage(chatID, "🛑 ERRORE: " + error);
@@ -35,6 +37,8 @@ function clearMessage(userID, chatID) {
                         set Families.Message = NULL
                         where FamilyComponents.TelegramUser = ?`, [userID], (error, results, _) => {
     dbConnection.end();
+
+    addLog(`[${userID}] Messaggio cancellato`);
 
     if (error) {
       bot.sendMessage(chatID, "🛑 ERRORE: " + error);
@@ -71,10 +75,13 @@ bot.onText(/\/cancellaavviso/, (msg, _) => {
 });
 
 bot.onText(/\/apri/, () => {
+  addLog(`[${userID}] Porta aperta`);
+
   axios
     .get(config.server.nodeOpenDoor)
     .then(function () {
       bot.sendMessage(userID, "✅ Porta aperta");
+      addLog()
     })
     .catch(error => {
       console.error(error);
@@ -83,10 +90,12 @@ bot.onText(/\/apri/, () => {
 
 bot.on('callback_query', function onCallbackQuery(q) {
   if (q.data == "open") {
+    addLog(`[${q.from.id}] Porta aperta`);
+
     axios
       .get(config.server.nodeOpenDoor)
       .then(function () {
-        bot.sendMessage(userID, "✅ Porta aperta");
+        bot.sendMessage(q.message.chat.id, "✅ Porta aperta");
       })
       .catch(error => {
         console.error(error);

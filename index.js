@@ -26,6 +26,8 @@ app.post("/api/ring/family/:familyID", (req, res) => {
                         where Families.ID = ? and not TelegramUser is null`, [req.params.familyID], (error, results, _) => {
     dbConnection.end();
 
+    addLog(`Qualcuno ha suonato alla famiglia ${req.params.familyID}: ${req.body.message}`);
+
     if (error) {
       res.status(404).json({
         ok: false,
@@ -67,6 +69,8 @@ app.post("/api/ring/user/:userID", (req, res) => {
   dbConnection = createDBConnection();
   dbConnection.query("select Name, TelegramUser from FamilyComponents where ID = ? and not TelegramUser is null", [req.params.userID], (error, results, _) => {
     dbConnection.end();
+
+    addLog(`Qualcuno ha suonato all'utente ${req.params.userID}: ${req.body.message}`);
 
     if (error) {
       res.status(404).json({
