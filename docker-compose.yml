@@ -6,4 +6,6 @@ services:
     container_name: boschouse
     build:
       context: .
+    env_file:
+      - .env
     network_mode: "host"
