@@ -44,7 +44,7 @@ function sendMessageRequest(telegramUserID, message) {
 }
 
 app.post("/api/ring/family/:familyID", (req, res) => {
-  ringDoor(familyID);
+  ringDoor(req.params.familyID);
 
   dbConnection = createDBConnection();
   dbConnection.query(`select TelegramUser
