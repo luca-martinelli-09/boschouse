@@ -2,7 +2,7 @@ const config = require('./config')
 const express = require("express");
 const { createServer } = require("http");
 
-const { createDBConnection } = require('./src/database')
+const { createDBConnection, addLog } = require('./src/database')
 const { bot } = require('./src/tgbot');
 const { groupJSON } = require('./src/utils');
 
