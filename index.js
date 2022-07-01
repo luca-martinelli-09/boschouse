@@ -19,7 +19,33 @@ app.post(`/bot${config.telegram.api}`, (req, res) => {
   res.sendStatus(200);
 });
 
+function ringDoor(familyID) {
+  axios
+    .post(config.server.nodeRingDoor, { family: familyID })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+function sendMessageRequest(telegramUserID, message) {
+  message = req.body.message && req.body.message.length > 0 ? "\n\n*MESSAGGIO*\n" + req.body.message : "";
+
+  bot.sendMessage(telegramUserID, `🔔 C'è qualcuno alla porta! 🔔${message}`, {
+    parse_mode: "Markdown",
+    reply_markup: {
+      inline_keyboard: [[
+        {
+          text: "Apri",
+          callback_data: "open",
+        }
+      ]]
+    }
+  });
+}
+
 app.post("/api/ring/family/:familyID", (req, res) => {
+  ringDoor(familyID);
+
   dbConnection = createDBConnection();
   dbConnection.query(`select TelegramUser
                         from Families join FamilyComponents on Families.ID = FamilyComponents.Family
@@ -40,17 +66,7 @@ app.post("/api/ring/family/:familyID", (req, res) => {
     if (results.length > 0) {
       for (i in results) {
         telegramUserID = results[i].TelegramUser;
-        bot.sendMessage(telegramUserID, `🔔 C'è qualcuno alla porta! 🔔${message}`, {
-          parse_mode: "Markdown",
-          reply_markup: {
-            inline_keyboard: [[
-              {
-                text: "Apri",
-                callback_data: "open",
-              }
-            ]]
-          }
-        });
+        sendMessageRequest(telegramUserID, req.body.message);
       }
 
       res.status(200).json({
@@ -67,7 +83,7 @@ app.post("/api/ring/family/:familyID", (req, res) => {
 
 app.post("/api/ring/user/:userID", (req, res) => {
   dbConnection = createDBConnection();
-  dbConnection.query("select Name, TelegramUser from FamilyComponents where ID = ? and not TelegramUser is null", [req.params.userID], (error, results, _) => {
+  dbConnection.query("select Name, TelegramUser, Family from FamilyComponents where ID = ? and not TelegramUser is null", [req.params.userID], (error, results, _) => {
     dbConnection.end();
 
     addLog(`Qualcuno ha suonato all'utente ${req.params.userID}: ${req.body.message}`);
@@ -79,22 +95,13 @@ app.post("/api/ring/user/:userID", (req, res) => {
       });
     }
 
-    message = req.body.message && req.body.message.length > 0 ? "\n\n*MESSAGGIO*\n" + req.body.message : "";
-
     if (results.length > 0) {
       telegramUserID = results[0].TelegramUser;
+      familyID = results[0].Family;
 
-      bot.sendMessage(telegramUserID, `🔔 C'è qualcuno alla porta! 🔔${message}`, {
-        parse_mode: "Markdown",
-        reply_markup: {
-          inline_keyboard: [[
-            {
-              text: "Apri",
-              callback_data: "open",
-            }
-          ]]
-        }
-      });
+      ringDoor(familyID)
+
+      sendMessageRequest(telegramUserID, req.body.message);
 
       res.status(200).json({
         ok: true
