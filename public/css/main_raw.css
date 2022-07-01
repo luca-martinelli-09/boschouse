@@ -1,0 +1,76 @@
+@import url("https://api.fontshare.com/v2/css?f[]=general-sans@500,400,700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body {
+  @apply bg-[#F9F9F9] dark:bg-[#062C30] dark:text-gray-50 font-body min-h-screen p-5 items-center text-lg;
+}
+
+header {
+  @apply flex flex-col gap-10 mb-10 items-center;
+}
+
+.title {
+  @apply text-3xl font-bold;
+}
+
+.title svg {
+  @apply h-12 text-[#377D71] dark:text-[#CDBE78];
+}
+
+#container {
+  @apply w-full max-w-screen-md mx-auto flex flex-col gap-4;
+}
+
+footer {
+  @apply bg-white dark:bg-[#1A3C40] border border-[#377D71] p-6 rounded-lg w-full max-w-screen-md mx-auto text-base leading-tight;
+}
+
+footer a {
+  @apply text-[#377D71] dark:text-[#CDBE78] mx-1 rounded-sm outline-none hover:outline-dotted hover:outline-offset-2 hover:outline-current hover:outline-2;
+}
+
+.card {
+  @apply border border-[#377D71] dark:border-[#CDBE78] shadow transition-shadow duration-300 hover:shadow-md rounded-md p-4;
+}
+
+.message {
+  @apply bg-[#FCFFE7] dark:bg-[#534E52] text-[#534E52] dark:text-[#FCFFE7] p-3 border border-[#E0D8B0] rounded-md flex items-center space-x-3;
+}
+
+.component {
+  @apply p-3 bg-white dark:bg-transparent border text-[#377D71] dark:text-teal-50 text-opacity-80 dark:text-opacity-80 border-[#377D71] rounded-lg font-medium transition-colors duration-300
+    peer-checked:bg-[#E8FFFF] dark:peer-checked:bg-[#1A3C40] dark:peer-checked:border-[#CDBE78] peer-checked:text-opacity-100;
+}
+
+.message-input {
+  @apply bg-gray-50 block w-full border border-gray-300 dark:border-teal-900 rounded-lg focus:ring-[#377D71] focus:border-[#377D71] text-base px-5 py-4
+    focus:outline-none focus:ring-1 dark:bg-[#1A3C40] dark:placeholder-gray-400 dark:focus:ring-[#CDBE78] dark:focus:border-[#CDBE78];
+}
+
+.toast {
+  @apply flex space-x-3 p-3 rounded-t-md items-center w-full max-w-screen-md mx-auto text-white bg-[#14C38E];
+}
+
+.toast.error {
+  @apply bg-[#DF2E2E];
+}
+
+.toast.error .succ-icon {
+  @apply hidden;
+}
+
+.toast.success .err-icon {
+  @apply hidden;
+}

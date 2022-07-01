@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+
+  boschouse:
+    container_name: boschouse
+    build:
+      context: .
+    network_mode: "host"

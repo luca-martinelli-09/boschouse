@@ -1,0 +1,25 @@
+footer.mt-16.flex.flex-col.gap-2
+  p Questo sito non raccoglie e conserva alcun tipo di dato sensibile. 
+    a.link(href="https://lucamartinelli.eu.org/blog/0" target="_blank" rel="noopener noreferrer") Privacy Policy.
+  p Realizzato da 
+    a.link(href="https://lucamartinelli.eu.org/" target="_blank" rel="noopener noreferrer") Luca Martinelli
+    | .
+  p Progetto disponibile su 
+    a.link(href="https://github.com/luca-martinelli-09/boschouse" target="_blank" rel="noopener noreferrer") GitHub
+    | .
+  
+  div(class="flex mt-3 space-x-3 items-center justify-center")
+    span(class="text-[#CDBE78] flex")
+        <ion-icon name="sunny"></ion-icon>
+
+    label(for="theme-toggle" class="inline-flex relative items-center cursor-pointer")
+      input#theme-toggle(type="checkbox", class="sr-only peer")
+      div(class="w-9 h-5 bg-gray-200 rounded-full border border-gray-300 peer dark:bg-teal-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-[#CDBE78]")
+    
+    span(class="text-[#CDBE78] flex")
+      <ion-icon name="moon"></ion-icon>
+  
+  script(src="/js/theme.js") 
+
+script(type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js")
+script(nomodule, src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js")

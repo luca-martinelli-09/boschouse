@@ -1,0 +1,31 @@
+doctype html
+html(lang="en")
+  include components/head.pug
+
+  main 
+    #container
+      div(class="animate-pulse h-8 w-64 bg-slate-300 dark:bg-teal-900 rounded-lg")
+      div(class="animate-pulse h-2 w-72 bg-slate-300 dark:bg-teal-900 rounded-md")
+
+      each i in [0, 1]
+        div(class="animate-pulse h-2 mt-3 w-32 bg-slate-300 dark:bg-teal-900 rounded-md")
+
+        a.card(href="/house/" + houseID + "/family/" + i)
+          div(class="animate-pulse flex items-center space-x-10")
+            div(class="flex-1 space-y-4")
+              div(class="h-6 w-60 bg-slate-300 dark:bg-teal-900 rounded-md")
+              div(class="h-2 w-28 bg-slate-300 dark:bg-teal-900 rounded-md")
+
+              if i <= 0
+                .message(class="flex flex-col space-y-4")
+                  div(class="h-2 w-full bg-[#E0D8B0] rounded-md")
+                  div(class="h-2 w-1/2 bg-[#E0D8B0] rounded-md")
+
+            <ion-icon name="chevron-forward-outline" class="text-[#377D71] dark:text-[#CDBE78] text-xl"></ion-icon>
+
+  include components/footer.pug
+
+  include components/templates.pug
+
+  script(src="/js/app.js")
+  script(src="/js/main.js")

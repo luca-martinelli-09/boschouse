@@ -1,0 +1,21 @@
+head
+  meta(charset="UTF-8")
+  meta(http-equiv="X-UA-Compatible" content="IE=edge")
+  meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+  meta(name="author" content="Luca Martinelli")
+
+  title Boschouse
+  link(rel="stylesheet" href="/css/main.css")
+
+  link(rel="icon" href="/images/icons/icon.png" type="image/png")
+
+  if houseID
+    script const HOUSE_ID = "#{houseID}";
+
+body
+  header
+    h1.title
+      a(href="/") 
+        svg
+          use(xlink:href="/res/logo.svg#Logo")
