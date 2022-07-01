@@ -85,6 +85,9 @@ bot.on('callback_query', function onCallbackQuery(q) {
   if (q.data == "open") {
     axios
       .get(config.server.nodeOpenDoor)
+      .then(function () {
+        bot.sendMessage(userID, "✅ Porta aperta");
+      })
       .catch(error => {
         console.error(error);
       });
