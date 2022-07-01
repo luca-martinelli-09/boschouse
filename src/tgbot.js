@@ -6,7 +6,7 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const bot = new TelegramBot(config.telegram.api);
 
-bot.setWebHook(`${config.server.host}:${config.server.port}/bot${config.telegram.api}`);
+bot.setWebHook(`${config.server.host}/bot${config.telegram.api}`);
 
 function setMessage(message, userID, chatID) {
   dbConnection = createDBConnection();
