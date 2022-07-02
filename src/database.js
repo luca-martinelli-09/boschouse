@@ -9,9 +9,8 @@ const createDBConnection = () => {
 
 const addLog = (log) => {
   dbConnection = createDBConnection();
-  dbConnection.query(`insert into Activities (Log) values (?)`, [log], () => {
-    dbConnection.end();
-  });
+  dbConnection.query(`insert into Activities (Log) values (?)`, [log]);
+  dbConnection.end();
 }
 
 module.exports = { createDBConnection, addLog };

@@ -42,6 +42,7 @@ const clearMessage = (userID, chatID) => {
 
     if (error) {
       bot.sendMessage(chatID, "🛑 ERRORE: " + error);
+      return;
     }
 
     if (results.affectedRows > 0) {
@@ -50,6 +51,61 @@ const clearMessage = (userID, chatID) => {
       bot.sendMessage(chatID, "🛑 Nessuna modifica fatta, forse non hai le autorizzazioni necessarie");
     }
   });
+}
+
+const setSilenceMode = (silence, userID, chatID) => {
+  dbConnection = createDBConnection();
+  dbConnection.query(`update Families
+                        join FamilyComponents on FamilyComponents.Family = Families.ID
+                        set Families.SilenceMode = ?
+                        where FamilyComponents.TelegramUser = ?`, [silence ? 1 : 0, userID], (error, results, _) => {
+
+    addLog(`[${userID}] Modalità silenziosa ${silence}`);
+
+    if (error) {
+      bot.sendMessage(chatID, "🛑 ERRORE: " + error);
+      return;
+    }
+
+    if (results.affectedRows > 0) {
+      bot.sendMessage(chatID, "✅ Modalità silenziosa " + (silence ? "attivata" : "disattivata"));
+    } else {
+      bot.sendMessage(chatID, "🛑 Nessuna modifica fatta, forse non hai le autorizzazioni necessarie");
+    }
+  });
+
+  dbConnection.end();
+}
+
+const openDoor = (userID, onOpen, onError) => {
+  dbConnection = createDBConnection();
+  dbConnection.query(`select Houses.OpenDoorEndpoint
+                        from FamilyComponents join Families on Families.ID = FamilyComponents.Family
+                        join InternalAccesses on InternalAccesses.ID = Families.InternalAccess
+                        join Houses on Houses.ID = InternalAccesses.House
+                        where FamilyComponents.TelegramUser = ?`, [userID], (error, results, _) => {
+
+    if (error) {
+      onError();
+      return;
+    }
+
+    if (results.length > 0 && results[0].OpenDoorEndpoint) {
+      axios
+        .get(results[0].OpenDoorEndpoint)
+        .then(() => {
+          onOpen();
+        })
+        .catch((error) => {
+          onError();
+          console.log(error);
+        });
+    } else {
+      onError();
+    }
+  });
+
+  dbConnection.end();
 }
 
 bot.onText(/\/avviso (.+)/, (msg, match) => {
@@ -74,33 +130,60 @@ bot.onText(/\/cancellaavviso/, (msg, _) => {
   clearMessage(userID, msg.chat.id);
 });
 
-bot.onText(/\/apri/, () => {
-  addLog(`[${userID}] Porta aperta`);
+bot.onText(/\/apri/, (msg) => {
+  openDoor(msg.from.id, () => {
+    bot.sendMessage(msg.chat.id, "✅ Porta aperta");
+    addLog(`[${msg.from.id}] Porta aperta`);
+  }, () => {
+    bot.sendMessage(msg.chat.id, "🛑 Impossibile aprire la porta");
+  });
+});
 
-  axios
-    .get(config.server.nodeOpenDoor)
-    .then(function () {
-      bot.sendMessage(userID, "✅ Porta aperta");
-      addLog()
-    })
-    .catch(error => {
-      console.error(error);
-    });
+bot.onText(/\/attiva/, (msg, _) => {
+  setSilenceMode(false, msg.from.id, msg.chat.id);
+});
+
+bot.onText(/\/disattiva/, (msg, _) => {
+  setSilenceMode(true, msg.from.id, msg.chat.id);
 });
 
 bot.on('callback_query', function onCallbackQuery(q) {
   if (q.data == "open") {
-    addLog(`[${q.from.id}] Porta aperta`);
-
-    axios
-      .get(config.server.nodeOpenDoor)
-      .then(function () {
-        bot.editMessageReplyMarkup({'inline_keyboard': [[]]});
-        bot.sendMessage(q.message.chat.id, "✅ Porta aperta");
-      })
-      .catch(error => {
-        console.error(error);
+    openDoor(q.from.id, () => {
+      bot.editMessageReplyMarkup(null, {
+        chat_id: q.message.chat.id,
+        message_id: q.message.message_id,
       });
+
+      bot.editMessageText(q.message.text + "\n\n✅ Porta aperta", {
+        chat_id: q.message.chat.id,
+        message_id: q.message.message_id,
+      });
+
+      addLog(`[${q.from.id}] Porta aperta`);
+    }, () => {
+      bot.editMessageReplyMarkup(null, {
+        chat_id: q.message.chat.id,
+        message_id: q.message.message_id,
+      });
+
+      bot.editMessageText(q.message.text + "\n\n🛑 Impossibile aprire la porta", {
+        chat_id: q.message.chat.id,
+        message_id: q.message.message_id,
+      });
+    });
+  } else if (q.data == "notopen") {
+    addLog(`[${q.from.id}] Porta non aperta`);
+
+    bot.editMessageReplyMarkup(null, {
+      chat_id: q.message.chat.id,
+      message_id: q.message.message_id,
+    });
+
+    bot.editMessageText(q.message.text + "\n\n🛑 Porta NON aperta", {
+      chat_id: q.message.chat.id,
+      message_id: q.message.message_id,
+    });
   }
 });
 

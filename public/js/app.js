@@ -6,7 +6,7 @@ function createToast(message, isSuccess) {
   const t = toastTemplate.content.cloneNode(true);
 
   t.getElementById("toast-container").classList.add(isSuccess ? "success" : "error");
-  t.getElementById("toast-message").innerText = message;
+  t.getElementById("toast-message").innerHTML = message;
 
   setTimeout(() => {
     for (toast of document.getElementsByClassName("toast")) {
@@ -15,6 +15,23 @@ function createToast(message, isSuccess) {
   }, 5000);
 
   document.body.appendChild(t);
+}
+
+function createMessage(message, from) {
+  const messageTemplate = document.getElementById("tg-message");
+
+  const m = messageTemplate.content.cloneNode(true);
+
+  m.getElementById("msg-tg-from").innerText = from;
+  m.getElementById("msg-content").innerText = message;
+
+  m.getElementById("btn-close").addEventListener("click", () => {
+    for (message of document.getElementsByClassName("telegram-message")) {
+      message.remove();
+    }
+  });
+
+  document.body.appendChild(m);
 }
 
 function fillContainer(data) {
@@ -118,6 +135,10 @@ function fillDoorbell(fam, internal) {
     d.getElementById("components").appendChild(co);
   }
 
+  if (fam.SilenceMode) {
+    d.getElementById("bell").style.display = "none";
+  }
+
   d.getElementById("bell").addEventListener("click", function () {
     const checkedboxes = document.querySelectorAll("input[name='comp']:checked");
     const checkboxes = document.querySelectorAll("input[name='comp']");
@@ -158,8 +179,6 @@ function fillDoorbell(fam, internal) {
   c.appendChild(d);
 }
 
-socket.on("message", (message) => {
-  if (message) {
-    createToast(message, true);
-  }
+socket.on("newMessage", (message, from) => {
+  createMessage(message, from);
 });
