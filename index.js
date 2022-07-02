@@ -120,7 +120,7 @@ app.get("/api/house/:houseID", (req, res) => {
   dbConnection = createDBConnection();
   dbConnection.query(`select Houses.ID as IDHouse, Houses.Name as HouseName, concat(Houses.Street, ", ", Houses.Number, " - ", Houses.CAP, ", ", Houses.City, " (", Houses.Province, ")") as Address,
                           InternalAccesses.ID as IDInternal, InternalAccesses.Floor as Floor,
-                          Families.ID as IDFamily, Families.Name as FamilyName, Families.Message as FamilyMessage,
+                          Families.ID as IDFamily, MD5(Families.ID) as FamilyHash, Families.Name as FamilyName, Families.Message as FamilyMessage,
                           FamilyComponents.ID as IDComponent, FamilyComponents.Name as ComponentName, FamilyComponents.Surname as ComponentSurname
                         from Houses join InternalAccesses on InternalAccesses.House = Houses.ID
                           join Families on Families.InternalAccess = InternalAccesses.ID
@@ -144,6 +144,7 @@ app.get("/api/house/:houseID", (req, res) => {
         IDInternal: "IDInternal",
         Floor: "Floor",
         IDFamily: "IDFamily",
+        FamilyHash: "FamilyHash",
         FamilyName: "FamilyName",
         FamilyMessage: "FamilyMessage"
       }, "IDFamily", {
@@ -160,6 +161,7 @@ app.get("/api/house/:houseID", (req, res) => {
         Floor: "Floor",
       }, "IDInternal", {
         ID: "IDFamily",
+        Hash: "FamilyHash",
         Name: "FamilyName",
         Message: "FamilyMessage",
         Components: "Components",

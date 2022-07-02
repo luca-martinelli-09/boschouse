@@ -1,3 +1,5 @@
+const socket = io();
+
 function createToast(message, isSuccess) {
   const toastTemplate = document.getElementById("toast");
 
@@ -65,6 +67,8 @@ function fillContainer(data) {
 }
 
 function fillDoorbell(fam, internal) {
+  socket.emit("joinFamilyDoorbell", fam.Hash);
+
   const c = document.getElementById("container");
   c.innerHTML = "";
 
@@ -153,8 +157,6 @@ function fillDoorbell(fam, internal) {
 
   c.appendChild(d);
 }
-
-const socket = io();
 
 socket.on("message", (message) => {
   if (message) {
