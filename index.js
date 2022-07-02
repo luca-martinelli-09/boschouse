@@ -179,8 +179,42 @@ app.get("/api/house/:houseID", (req, res) => {
     })
 });
 
+bot.on("message", (msg) => {
+  const userID = msg.from.id;
+  const message = msg.text;
+
+  if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
+    setMessage(message, userID, msg.chat.id);
+  } else {
+    dbConnection = createDBConnection();
+    dbConnection.query(`select Name, MD5(Family) as FamilyID
+                        from FamilyComponents where TelegramUser = ?`, [userID], (error, results, _) => {
+      dbConnection.end();
+
+      addLog(`[${userID}] ha risposto: ${message}`);
+
+      if (error) {
+        bot.sendMessage(msg.chat.id, "🛑 ERRORE: " + error);
+      }
+
+      if (results.length > 0) {
+        const familyID = results[0].FamilyID;
+        const name = results[0].Name;
+
+        console.log("Message to " + familyID)
+        globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
+      }
+    });
+  }
+});
+
 app.use("/house/:houseID", (req, res) => {
   res.render("house", { houseID: req.params.houseID });
+});
+
+app.post(`/bot${config.telegram.api}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
 app.use("/", (_, res) => {
@@ -197,11 +231,6 @@ io.on("connection", (socket) => {
     console.log("Joined " + familyID);
     socket.join(familyID);
   });
-});
-
-app.post(`/bot${config.telegram.api}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
 });
 
 httpServer.listen(config.server.port);
