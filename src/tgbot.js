@@ -8,7 +8,7 @@ const bot = new TelegramBot(config.telegram.api);
 
 bot.setWebHook(`${config.server.host}/bot${config.telegram.api}`);
 
-function setMessage(message, userID, chatID) {
+const setMessage = (message, userID, chatID) => {
   dbConnection = createDBConnection();
   dbConnection.query(`update Families
                         join FamilyComponents on FamilyComponents.Family = Families.ID
@@ -30,7 +30,7 @@ function setMessage(message, userID, chatID) {
   });
 }
 
-function clearMessage(userID, chatID) {
+const clearMessage = (userID, chatID) => {
   dbConnection = createDBConnection();
   dbConnection.query(`update Families
                         join FamilyComponents on FamilyComponents.Family = Families.ID
@@ -104,13 +104,4 @@ bot.on('callback_query', function onCallbackQuery(q) {
   }
 });
 
-bot.on("message", (msg) => {
-  const userID = msg.from.id;
-  const message = msg.text;
-
-  if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
-    setMessage(message, userID, msg.chat.id);
-  }
-});
-
-module.exports = { bot };
+module.exports = { bot, setMessage, clearMessage };

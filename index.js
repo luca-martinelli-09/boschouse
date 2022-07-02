@@ -1,10 +1,11 @@
 const config = require('./config')
 const axios = require('axios');
 const express = require("express");
+const { Server } = require("socket.io");
 const { createServer } = require("http");
 
 const { createDBConnection, addLog } = require('./src/database')
-const { bot } = require('./src/tgbot');
+const { bot, setMessage } = require('./src/tgbot');
 const { groupJSON } = require('./src/utils');
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 app.set('view engine', 'pug');
 
 const httpServer = createServer(app);
+const io = new Server(httpServer);
 
 app.post(`/bot${config.telegram.api}`, (req, res) => {
   bot.processUpdate(req.body);
@@ -186,6 +188,43 @@ app.use("/house/:houseID", (req, res) => {
 
 app.use("/", (_, res) => {
   res.render("index");
+});
+
+// Socket server
+io.on("connection", (socket) => {
+  socket.on("joinFamilyDoorbell", (familyID) => {
+    socket.join(familyID);
+  });
+});
+
+// TG Bot
+
+bot.on("message", (msg) => {
+  const userID = msg.from.id;
+  const message = msg.text;
+
+  if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
+    setMessage(message, userID, msg.chat.id);
+  } else {
+    dbConnection = createDBConnection();
+    dbConnection.query(`select Name, MD5(Family) as FamilyID
+                        from FamilyComponents where TelegramUser = ?`, [userID], (error, results, _) => {
+      dbConnection.end();
+
+      addLog(`[${userID}] ha risposto: ${message}`);
+
+      if (error) {
+        bot.sendMessage(msg.chat.id, "🛑 ERRORE: " + error);
+      }
+
+      if (results.length > 0) {
+        const familyID = results[0].FamilyID;
+        const name = results[0].Name;
+
+        socket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
+      }
+    });
+  }
 });
 
 httpServer.listen(config.server.port);

@@ -153,3 +153,11 @@ function fillDoorbell(fam, internal) {
 
   c.appendChild(d);
 }
+
+const socket = io();
+
+socket.on("message", (message) => {
+  if (message) {
+    createToast(message, true);
+  }
+});

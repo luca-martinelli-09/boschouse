@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS Families (
   Name VARCHAR(300) NOT NULL,
   InternalAccess INT NOT NULL,
   Message VARCHAR(700) DEFAULT NULL,
+  SilenceMode INT(1) DEFAULT 0,
 
   PRIMARY KEY (ID),
   FOREIGN KEY (InternalAccess) REFERENCES InternalAccesses(ID)
