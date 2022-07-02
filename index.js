@@ -204,9 +204,9 @@ bot.on("message", (msg) => {
         const name = results[0].Name;
 
         console.log("Message to " + familyID);
-        if (globSocket) {
+        /*if (globSocket) {
           globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
-        }
+        }*/
       }
     });
   }
