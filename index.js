@@ -199,17 +199,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// TG Bot
-
-bot.on("message", (msg) => {
-  const userID = msg.from.id;
-  const message = msg.text;
-
-  if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
-    setMessage(message, userID, msg.chat.id);
-  }
-});
-
 app.post(`/bot${config.telegram.api}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);

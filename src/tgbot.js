@@ -104,4 +104,13 @@ bot.on('callback_query', function onCallbackQuery(q) {
   }
 });
 
+bot.on("message", (msg) => {
+  const userID = msg.from.id;
+  const message = msg.text;
+
+  if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
+    setMessage(message, userID, msg.chat.id);
+  }
+});
+
 module.exports = { bot, setMessage, clearMessage };
