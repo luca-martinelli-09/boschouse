@@ -207,26 +207,6 @@ bot.on("message", (msg) => {
 
   if (msg.reply_to_message && msg.reply_to_message.text == "Rispondimi col messaggio che vuoi impostare") {
     setMessage(message, userID, msg.chat.id);
-  } else {
-    dbConnection = createDBConnection();
-    dbConnection.query(`select Name, MD5(Family) as FamilyID
-                        from FamilyComponents where TelegramUser = ?`, [userID], (error, results, _) => {
-      dbConnection.end();
-
-      addLog(`[${userID}] ha risposto: ${message}`);
-
-      if (error) {
-        bot.sendMessage(msg.chat.id, "🛑 ERRORE: " + error);
-      }
-
-      if (results.length > 0) {
-        const familyID = results[0].FamilyID;
-        const name = results[0].Name;
-        
-        console.log("Message to " + familyID)
-        globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
-      }
-    });
   }
 });
 
