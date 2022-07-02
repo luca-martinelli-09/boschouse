@@ -223,6 +223,7 @@ bot.on("message", (msg) => {
         const familyID = results[0].FamilyID;
         const name = results[0].Name;
         
+        console.log("Message to " + familyID)
         globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
       }
     });
