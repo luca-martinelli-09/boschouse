@@ -1,11 +1,9 @@
-<center>
+<div align="center">
 <img src="public/images/icons/icon.png" alt="Boscouse" width="75"/>
-<br>
-<br>
 
 # Boschouse
 
-</center>
+</div>
 
 ## What is it?
 
