@@ -17,6 +17,10 @@ Clicking on a family, people can choose to send a notification to all the family
 
 Family members can also add a message (using Telegram) that will be displayed in the digital doorbell.
 
+Using websockets, from Telegram a user can also answer to the doorbell, replying to the notification.
+
+Families can also activate and deactivate the doorbell.
+
 ## How to install it?
 
 Clone this repository
@@ -25,12 +29,12 @@ Clone this repository
 git clone https://github.com/luca-martinelli-09/boschouse
 ```
 
+Setup a database using `src\createDatabase.sql` and fill it with the required information.
+
 Copy `.env.template` to `.env` and set the required parameters.
 
 - **PORT**: The port where to start the server
 - **BASE_URL**: The endpoint website for the digital doorbell
-- **NODE_OPEN_DOOR**: The Node-RED endpoint used to open the door (i.e. https://localhost:1880/door/open)
-- **NODE_RING**: The Node-RED endpoint used to open the door (i.e. http://localhost:1880/door/ring)
 - **DB_HOST**: Database host
 - **DB_USER**: Database user
 - **DB_PASSWORD**: Database password
@@ -54,6 +58,7 @@ npm run build && npm start
 - Server [NodeJS](https://nodejs.org/)
 - Web Server [ExpressJS](https://expressjs.com/)
 - Template Engine [PUG](https://pugjs.org/)
+- WebSocket [Socket.io](https://socket.io/)
 - Database [MySQL](https://www.mysql.com/it/)
 - [TailwindCSS](https://tailwindcss.com/)
 - [Node-RED](https://nodered.org/)
@@ -62,6 +67,5 @@ npm run build && npm start
 
 ## Future improvements
 
-- Sending a message from Telegram, using WebSockets
 - Take a photo/video and send it to Telegram
 - Extend the service for more houses, with registration/login and manage pages
