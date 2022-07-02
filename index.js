@@ -179,6 +179,8 @@ app.get("/api/house/:houseID", (req, res) => {
     })
 });
 
+let globSocket;
+
 bot.on("message", (msg) => {
   const userID = msg.from.id;
   const message = msg.text;
@@ -201,8 +203,10 @@ bot.on("message", (msg) => {
         const familyID = results[0].FamilyID;
         const name = results[0].Name;
 
-        console.log("Message to " + familyID)
-        globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
+        console.log("Message to " + familyID);
+        if (globSocket) {
+          globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
+        }
       }
     });
   }
@@ -220,8 +224,6 @@ app.post(`/bot${config.telegram.api}`, (req, res) => {
 app.use("/", (_, res) => {
   res.render("index");
 });
-
-let globSocket;
 
 // Socket server
 io.on("connection", (socket) => {
