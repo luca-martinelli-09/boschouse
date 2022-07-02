@@ -17,11 +17,6 @@ app.set('view engine', 'pug');
 const httpServer = createServer(app);
 const io = new Server(httpServer);
 
-app.post(`/bot${config.telegram.api}`, (req, res) => {
-  bot.processUpdate(req.body);
-  res.sendStatus(200);
-});
-
 function ringDoor(familyID) {
   axios
     .post(config.server.nodeRingDoor, { family: familyID })
@@ -192,9 +187,14 @@ app.use("/", (_, res) => {
   res.render("index");
 });
 
+let globSocket;
+
 // Socket server
 io.on("connection", (socket) => {
+  globSocket = socket;
+
   socket.on("joinFamilyDoorbell", (familyID) => {
+    console.log("Joined " + familyID);
     socket.join(familyID);
   });
 });
@@ -222,11 +222,16 @@ bot.on("message", (msg) => {
       if (results.length > 0) {
         const familyID = results[0].FamilyID;
         const name = results[0].Name;
-
-        socket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
+        
+        globSocket.to(familyID).emit("message", `<b>${name}</b>: ${message}`);
       }
     });
   }
+});
+
+app.post(`/bot${config.telegram.api}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
 httpServer.listen(config.server.port);
